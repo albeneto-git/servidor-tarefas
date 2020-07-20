@@ -1,9 +1,10 @@
 package br.com.alura.servidor;
 
 import java.net.Socket;
+import java.util.Scanner;
 
 public class DistribuirTarefas implements Runnable {
-	
+
 	private Socket socket;
 
 	public DistribuirTarefas(Socket socket) {
@@ -12,15 +13,17 @@ public class DistribuirTarefas implements Runnable {
 
 	@Override
 	public void run() {
-
-		System.out.println("Distribuindo taregas para " + socket);
 		try {
-			Thread.sleep(20000);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
+			System.out.println("Distribuindo taregas para " + socket);
+			Scanner entradaCliente = new Scanner(socket.getInputStream());
+			while (entradaCliente.hasNextLine()) {
+				String comando = entradaCliente.nextLine();
+				System.out.println(comando);
+			}
+			entradaCliente.close();
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
-		
-		
 	}
 
 }
