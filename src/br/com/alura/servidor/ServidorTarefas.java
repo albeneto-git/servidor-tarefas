@@ -9,6 +9,7 @@ public class ServidorTarefas {
 
 	public static void main(String[] args) throws Exception {
 		System.out.println("---iniciando servidor -----");
+		@SuppressWarnings("resource")
 		ServerSocket servidor = new ServerSocket(12345);
 		ExecutorService threadPool = Executors.newCachedThreadPool();
 		
