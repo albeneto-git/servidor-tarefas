@@ -6,6 +6,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ServidorTarefas {
@@ -17,7 +18,8 @@ public class ServidorTarefas {
 	public ServidorTarefas() throws IOException {
 		System.out.println("---iniciando servidor -----");
 		this.servidor = new ServerSocket(12345);
-		this.threadPool = Executors.newCachedThreadPool();
+		ThreadFactory defaultFactory = Executors.defaultThreadFactory();
+		this.threadPool = Executors.newFixedThreadPool(4, new FabricaDeThreads(defaultFactory));        //newCachedThreadPool();
 		this.estaRodando = new AtomicBoolean(true);
 	}
 
@@ -26,7 +28,7 @@ public class ServidorTarefas {
 			try {
 				Socket socket = servidor.accept();
 				System.out.println("Aceitando novo cliente na porta " + socket.getPort());
-				DistribuirTarefas distribuirTarefas = new DistribuirTarefas(socket, this);
+				DistribuirTarefas distribuirTarefas = new DistribuirTarefas(this.threadPool, socket, this);
 				threadPool.execute(distribuirTarefas);
 			} catch (SocketException e) {
 				System.out.println("SocketException, está rodando " + this.estaRodando);

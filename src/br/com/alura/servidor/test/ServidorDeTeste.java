@@ -2,38 +2,48 @@ package br.com.alura.servidor.test;
 
 public class ServidorDeTeste {
 
-    private volatile boolean estaRodando = false;
+	private volatile boolean estaRodando = false;
 
-    public static void main(String[] args) throws InterruptedException {
-        ServidorDeTeste servidor = new ServidorDeTeste();
-        servidor.rodar();
-        servidor.alterandoAtributo();
-    }
+	public static void main(String[] args) throws InterruptedException {
+		ServidorDeTeste servidor = new ServidorDeTeste();
+		servidor.rodar();
+		servidor.alterandoAtributo();
+	}
 
-    private void rodar() {
-        new Thread(new Runnable() {
+	private void rodar() {
+		Thread thread = new Thread(new Runnable() {
 
-            public void run() {
-                System.out.println("Servidor começando, estaRodando = " + estaRodando );
+			public void run() {
+				System.out.println("Servidor começando, estaRodando = " + estaRodando);
 
-                while(!estaRodando) {}
+				while (!estaRodando) {
+				}
 
-                System.out.println("Servidor rodando, estaRodando = " + estaRodando );
+				if (estaRodando) {
+					throw new RuntimeException("Deu erro na thread...");
+				}
 
-                while(estaRodando) {}
+				System.out.println("Servidor rodando, estaRodando = " + estaRodando);
 
-                System.out.println("Servidor terminando, estaRodando = " + estaRodando );
-            }
-        }).start();
-    }
+				while (estaRodando) {
+				}
 
-    private void alterandoAtributo() throws InterruptedException {
-        Thread.sleep(5000);
-        System.out.println("Main alterando estaRodando = true");
-        estaRodando = true;
+				System.out.println("Servidor terminando, estaRodando = " + estaRodando);
+			}
+		});
+		
+		thread.setUncaughtExceptionHandler(new TratadorDeExcecao());
+		
+		thread.start();
+	}
 
-        Thread.sleep(5000);
-        System.out.println("Main alterando estaRodando = false");
-        estaRodando = false;        
-    }
+	private void alterandoAtributo() throws InterruptedException {
+		Thread.sleep(5000);
+		System.out.println("Main alterando estaRodando = true");
+		estaRodando = true;
+
+		Thread.sleep(5000);
+		System.out.println("Main alterando estaRodando = false");
+		estaRodando = false;
+	}
 }
